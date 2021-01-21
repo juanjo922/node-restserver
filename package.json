@@ -2,6 +2,7 @@
     "name": "07-restserver",
     "version": "1.0.0",
     "description": "",
+    "node": "12.6.0",
     "main": "index.js",
     "scripts": {
         "start": "node server/server.js",
