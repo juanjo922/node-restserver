@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-//adquirimos las rutas de las peticiones en el archivo usuario
+//adquirimos las rutas de las peticiones en el archivo usuario de la carpeta routes
 app.use(require('../routes/usuario'));
 
 // ==============================
