@@ -3,15 +3,25 @@ const express = require('express');
 //instalar npm i bcrypt --save  para encriptar contraseñas con un hash de una sola vía
 const bcrypt = require('bcrypt');
 
+//instalar npm install jsonwebtoken --save para generar y usar webtoken
+let jwt = require('jsonwebtoken');
+
 // instalar npm install underscore --save para filtrar campos de objetos
 const _ = require('underscore')
 
 const Usuario = require('../server/models/usuario');
+const { verificaToken } = require('../server/middlewares/autenticacion');
+const { verificaAdmin_Role } = require('../server/middlewares/autenticacion');
+const usuario = require('../server/models/usuario');
+
 const app = express();
 
 
-
-app.get('/usuario', function(req, res) {
+//en las peticiones cuando el callback es el segundo parametro se debe de hacer como una funcion normal
+//de lo contrario, si es el tercer argumento lo podemos usar como funcion de flecha
+//app.get('/usuario', function(req, res) {});
+//en este caso el segundo argumento es un middleware
+app.get('/usuario', verificaToken, (req, res) => {
 
     let desde = req.query.desde || 0;
     desde = Number(desde);
@@ -34,7 +44,7 @@ app.get('/usuario', function(req, res) {
                 })
             };
 
-            Usuario.count({ estado: true }, (err, conteo) => {
+            Usuario.countDocuments({ estado: true }, (err, conteo) => {
 
                 res.json({
                     ok: true,
@@ -48,10 +58,10 @@ app.get('/usuario', function(req, res) {
 
 });
 
-app.post('/usuario', function(req, res) {
+
+app.post('/usuario', [verificaToken, verificaAdmin_Role], (req, res) => {
 
     let body = req.body;
-
 
     let usuario = new Usuario({
         nombre: body.nombre,
@@ -70,12 +80,17 @@ app.post('/usuario', function(req, res) {
             })
         };
 
-
         //   usuarioDB.password = null;
+
+        // let token = jwt.sign({
+        //     usuario: usuarioDB
+        // }, process.env.SEMILLA, { expiresIn: process.env.CADUCIDAD_TOKEN });
+
 
         res.json({
             ok: true,
-            usuario: usuarioDB
+            usuario: usuarioDB,
+            token
         });
 
     });
@@ -84,7 +99,7 @@ app.post('/usuario', function(req, res) {
 
 
 
-app.put('/usuario/:id', function(req, res) {
+app.put('/usuario/:id', [verificaToken, verificaAdmin_Role], (req, res) => {
 
     let id = req.params.id;
     let body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']);
@@ -111,7 +126,7 @@ app.put('/usuario/:id', function(req, res) {
 
 }); //fin de app.put
 
-app.delete('/usuario/:id', function(req, res) {
+app.delete('/usuario/:id', [verificaToken, verificaAdmin_Role], (req, res) => {
 
     let id = req.params.id;
 

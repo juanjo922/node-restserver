@@ -5,9 +5,12 @@ require('./config/config');
 
 //Todos los require tienen que ir arriba según el estandar
 const express = require('express');
+//instalar npm instalar mongoose --save para modelar objetos y que trabajen de forma asíncrona
 const mongoose = require('mongoose');
 
 const app = express();
+
+//instalar el npm install body-parser --save para analizar el contenido de las solicitudes
 const bodyParser = require('body-parser');
 
 // parse application/x-www-form-urlencoded
@@ -16,14 +19,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-//adquirimos las rutas de las peticiones en el archivo usuario de la carpeta routes
-app.use(require('../routes/usuario'));
+//configuración global de rutas, obtiene las rutas que estan en este archivo
+app.use(require('../routes/index'));
+
 
 // ==============================
 // Conexión a la base de datos
 // ==============================
 let url = process.env.URLDB;
-// "node":"12.6.0",
+
 mongoose.connect(url, {
 
     useNewUrlParser: true,

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-//buscar npm mongoose-unique-validator e instalarlo
+//buscar npm mongoose-unique-validator e instalarlo para manejar valores unicos
 const uniqueValidator = require('mongoose-unique-validator');
 
 
@@ -45,7 +45,8 @@ let usuarioSchema = new Schema({
 
 });
 
-//borrar en la impresion password pero el objeto sigue ahí
+//borrar en la impresion el password pero el objeto sigue ahí
+//es para no mostrar el campo password en el objeto (se hace por seguridad)
 usuarioSchema.methods.toJSON = function() {
 
     let user = this;
@@ -55,7 +56,7 @@ usuarioSchema.methods.toJSON = function() {
     return userObject;
 }
 
-
+//mensaje indicando la validación de valores únicos en los campos designados
 usuarioSchema.plugin(uniqueValidator, { message: '{PATH} debe de ser único' });
 
 module.exports = mongoose.model('Usuario', usuarioSchema);
