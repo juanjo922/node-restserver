@@ -4,15 +4,15 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 
 //instalar npm install jsonwebtoken --save para generar y usar webtoken
-let jwt = require('jsonwebtoken');
+// let jwt = require('jsonwebtoken');
 
 // instalar npm install underscore --save para filtrar campos de objetos
-const _ = require('underscore')
+// const _ = require('underscore')
 
 const Usuario = require('../server/models/usuario');
-const { verificaToken } = require('../server/middlewares/autenticacion');
-const { verificaAdmin_Role } = require('../server/middlewares/autenticacion');
-const usuario = require('../server/models/usuario');
+const { verificaToken, verificaAdmin_Role } = require('../server/middlewares/autenticacion');
+
+// const usuario = require('../server/models/usuario');
 
 const app = express();
 
@@ -59,7 +59,7 @@ app.get('/usuario', verificaToken, (req, res) => {
 });
 
 
-app.post('/usuario', [verificaToken, verificaAdmin_Role], (req, res) => {
+app.post('/usuario', [verificaToken, verificaAdmin_Role], function(req, res) {
 
     let body = req.body;
 
@@ -89,8 +89,7 @@ app.post('/usuario', [verificaToken, verificaAdmin_Role], (req, res) => {
 
         res.json({
             ok: true,
-            usuario: usuarioDB,
-            token
+            usuario: usuarioDB
         });
 
     });
@@ -99,7 +98,7 @@ app.post('/usuario', [verificaToken, verificaAdmin_Role], (req, res) => {
 
 
 
-app.put('/usuario/:id', [verificaToken, verificaAdmin_Role], (req, res) => {
+app.put('/usuario/:id', [verificaToken, verificaAdmin_Role], function(req, res) {
 
     let id = req.params.id;
     let body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']);
@@ -126,7 +125,7 @@ app.put('/usuario/:id', [verificaToken, verificaAdmin_Role], (req, res) => {
 
 }); //fin de app.put
 
-app.delete('/usuario/:id', [verificaToken, verificaAdmin_Role], (req, res) => {
+app.delete('/usuario/:id', [verificaToken, verificaAdmin_Role], function(req, res) {
 
     let id = req.params.id;
 
@@ -135,7 +134,7 @@ app.delete('/usuario/:id', [verificaToken, verificaAdmin_Role], (req, res) => {
         estado: false
     }
 
-    Usuario.findByIdAndUpdate(id, cambiaEstado, { new: true }, (err, usuarioDB) => {
+    Usuario.findByIdAndUpdate(id, cambiaEstado, { new: true }, (err, usuarioBorrado) => {
 
         //codigo para deshabilitar usuario
         if (err) {
@@ -145,9 +144,19 @@ app.delete('/usuario/:id', [verificaToken, verificaAdmin_Role], (req, res) => {
             })
         };
 
+        if (!usuarioBorrado) {
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: 'Usuario no encontrado'
+                }
+            });
+        }
+
+
         res.json({
             ok: true,
-            usuario: usuarioDB
+            usuario: usuarioBorrado
         });
 
 
