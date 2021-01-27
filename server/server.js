@@ -7,6 +7,9 @@ require('./config/config');
 const express = require('express');
 //instalar npm instalar mongoose --save para modelar objetos y que trabajen de forma asíncrona
 const mongoose = require('mongoose');
+//importar path para que funcione la habilitacion de la carpeta public
+const path = require('path');
+
 
 const app = express();
 
@@ -18,6 +21,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
 app.use(bodyParser.json());
+
+//habilitar la carpeta public
+app.use(express.static(path.resolve(__dirname, '../public')));
+//console.log(path.resolve(__dirname, '../public'));
 
 //configuración global de rutas, obtiene las rutas que estan en este archivo
 app.use(require('../routes/index'));
